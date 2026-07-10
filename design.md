@@ -82,35 +82,30 @@ flowchart TD
 sequenceDiagram
     autonumber
     actor User as User/Caller
-    participant Graph as LangGraph Engine
-    participant State as AgentState (Memory)
-    participant Tests as node_run_tests (Pytest)
-    participant Edge as cond_should_continue (Router)
-    participant LLM as node_generate_code (LLM)
+    participant Env as Environment Variables (.env)
+    participant Engine as LangGraph Orchestrator
+    participant Runner as Test Runner Module
+    participant Generator as Code Generator Module
+    participant LLM as Ollama (Local LLM)
 
-    User->>Graph: invoke(inputs: file_path, test_path, max_iterations)
-    Graph->>State: Initialize state fields
-    Note over State: Set iterations = 0
+    User->>Engine: invoke(file_path, test_path, max_iterations)
+    Engine->>Env: Load Tracing settings (LANGCHAIN_TRACING_V2, etc.)
+    Note over Engine: Initialize AgentState
 
-    loop Self-Correction Loop (Up to max_iterations)
-        Graph->>Tests: Execute node
-        Tests->>State: Read test_path & file_path
-        Tests->>Tests: Run pytest command
-        Tests->>State: Update test_logs & test_passed
-        Graph->>Edge: Route evaluation
-        Edge->>State: Read test_passed & iterations
+    loop Self-Correction Loop (up to max_iterations)
+        Engine->>Runner: Execute Test Runner (with test_path & file_path)
+        Runner->>Runner: Run tests & collect logs
+        Runner-->>Engine: Return test_logs & test_passed
 
         alt test_passed == True OR iterations >= max_iterations
-            Edge->>Graph: Transition to __end__
-            Graph->>User: Return final State (Success/Failure)
+            Engine-->>User: Return final execution results & logs
         else test_passed == False AND iterations < max_iterations
-            Edge->>Graph: Transition to node_generate_code
-            Graph->>LLM: Execute node
-            LLM->>State: Read file_path, code & test_logs
-            LLM->>LLM: Query LLM for code fix
-            LLM->>LLM: Write corrected code to file
-            LLM->>State: Update code & increment iterations
-            LLM->>Graph: Transition back to node_run_tests
+            Engine->>Generator: Execute Code Generator (with test_logs & current code)
+            Generator->>Env: Load LLM settings (LLM_MODEL, LLM_BASE_URL, etc.)
+            Generator->>LLM: Query LLM (Ollama) with config & prompt
+            LLM-->>Generator: Return corrected code
+            Generator->>Generator: Write corrected code to file on disk
+            Generator-->>Engine: Return updated code & incremented iterations
         end
     end
 ```
