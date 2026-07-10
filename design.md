@@ -1,6 +1,5 @@
-# Design Document: AutoRepairAgent (Self-Correction Loop)
+# Design Document
 
-This document describes the design, directory structure, and state management for the autonomous code repair agent.
 
 ## Agent Identity
 
@@ -30,25 +29,8 @@ graph TD
 
 ---
 
-## Terminology Guide
-
-### 1. Code Generator (Code Generation & Modification)
-* **Summary**: Takes the test failure logs and current code as input, and uses an LLM to repair bugs in the code.
-* **Role**: Writes the corrected/modified code back to the original file.
-
-### 2. Test Runner (pytest Execution)
-* **Summary**: Runs pytest against the modified code.
-* **Role**: Collects test execution logs and determines if the tests passed or failed.
-
----
-
 ## Architecture & State Workflow
 
-The diagram below details the LangGraph workflow structure. In each node, we clearly distinguish between:
-1. **Graph Node Name** (The `str` key registered in the graph).
-2. **Implementation Object Name** (The actual Python function or class bound to the node).
-3. **Python Type / Signature** (The call signature and return type mapping).
-4. **Role** (What the component performs).
 
 ```mermaid
 flowchart TD
@@ -92,3 +74,43 @@ flowchart TD
 | `iterations` | `int` | Current iteration count of the self-correction loop |
 | `max_iterations` | `int` | Maximum loop limit (prevents infinite loops, default: 3) |
 | `messages` | `list` | Chat message history (standard conversation history for LangGraph) |
+
+
+## Data Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User/Caller
+    participant Graph as LangGraph Engine
+    participant State as AgentState (Memory)
+    participant Tests as node_run_tests (Pytest)
+    participant Edge as cond_should_continue (Router)
+    participant LLM as node_generate_code (LLM)
+
+    User->>Graph: invoke(inputs: file_path, test_path, max_iterations)
+    Graph->>State: Initialize state fields
+    Note over State: Set iterations = 0
+
+    loop Self-Correction Loop (Up to max_iterations)
+        Graph->>Tests: Execute node
+        Tests->>State: Read test_path & file_path
+        Tests->>Tests: Run pytest command
+        Tests->>State: Update test_logs & test_passed
+        Graph->>Edge: Route evaluation
+        Edge->>State: Read test_passed & iterations
+
+        alt test_passed == True OR iterations >= max_iterations
+            Edge->>Graph: Transition to __end__
+            Graph->>User: Return final State (Success/Failure)
+        else test_passed == False AND iterations < max_iterations
+            Edge->>Graph: Transition to node_generate_code
+            Graph->>LLM: Execute node
+            LLM->>State: Read file_path, code & test_logs
+            LLM->>LLM: Query LLM for code fix
+            LLM->>LLM: Write corrected code to file
+            LLM->>State: Update code & increment iterations
+            LLM->>Graph: Transition back to node_run_tests
+        end
+    end
+```

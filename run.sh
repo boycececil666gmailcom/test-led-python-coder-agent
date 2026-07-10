@@ -57,8 +57,8 @@ fi
 # Load variables
 export $(grep -v '^#' .env | xargs)
 
-if [ "$OPENAI_API_KEY" = "your-openai-api-key" ] || [ -z "$OPENAI_API_KEY" ]; then
-    echo "Warning: OPENAI_API_KEY is not set correctly in your .env file."
+if [ -z "$LLM_MODEL" ] || [ -z "$LLM_BASE_URL" ] || [ -z "$LLM_API_KEY" ]; then
+    echo "Warning: LLM Configuration (LLM_MODEL, LLM_BASE_URL, LLM_API_KEY) is not set correctly in your .env file."
 fi
 if [ "$LANGCHAIN_API_KEY" = "your-langsmith-api-key" ] || [ -z "$LANGCHAIN_API_KEY" ]; then
     echo "Warning: LANGCHAIN_API_KEY is not set correctly in your .env file."

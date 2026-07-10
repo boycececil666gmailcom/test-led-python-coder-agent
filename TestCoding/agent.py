@@ -7,7 +7,7 @@ from TestCoding.nodes import node_run_tests, node_generate_code, cond_should_con
 
 
 # Define the state graph
-workflow = StateGraph(AgentState) # type: ignore[arg-type]
+workflow = StateGraph(AgentState)
 
 # Add nodes
 workflow.add_node("node_run_tests", node_run_tests)
