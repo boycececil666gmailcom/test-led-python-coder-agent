@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "========================================================"
-echo "[1/5] Checking Python and Virtual Environment Setup"
+echo "[1/6] Checking Python and Virtual Environment Setup"
 echo "========================================================"
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
@@ -12,7 +12,7 @@ fi
 source .venv/Scripts/activate
 
 echo "========================================================"
-echo "[2/5] Installing dependencies and LangGraph CLI"
+echo "[2/6] Installing dependencies and LangGraph CLI"
 echo "========================================================"
 # Prefer uv if available, otherwise fallback to pip
 if command -v uv &> /dev/null; then
@@ -24,7 +24,7 @@ else
 fi
 
 echo "========================================================"
-echo "[3/5] Checking Ollama Service Status"
+echo "[3/6] Checking Ollama Service Status"
 echo "========================================================"
 if ! curl -s http://localhost:11434/api/tags &>/dev/null; then
     echo "Ollama is not running. Attempting to start Ollama..."
@@ -45,7 +45,7 @@ else
 fi
 
 echo "========================================================"
-echo "[4/5] Verifying Environment Variables"
+echo "[4/6] Verifying Environment Variables"
 echo "========================================================"
 if [ ! -f ".env" ]; then
     echo "No .env file found. Copying from .env.example..."
@@ -60,12 +60,18 @@ export $(grep -v '^#' .env | xargs)
 if [ "$OPENAI_API_KEY" = "your-openai-api-key" ] || [ -z "$OPENAI_API_KEY" ]; then
     echo "Warning: OPENAI_API_KEY is not set correctly in your .env file."
 fi
-if [ "$LANGCHAIN_API_KEY" = "your-langchain-api-key" ] || [ -z "$LANGCHAIN_API_KEY" ]; then
+if [ "$LANGCHAIN_API_KEY" = "your-langsmith-api-key" ] || [ -z "$LANGCHAIN_API_KEY" ]; then
     echo "Warning: LANGCHAIN_API_KEY is not set correctly in your .env file."
 fi
 
 echo "========================================================"
-echo "[5/5] Starting LangGraph Development Server"
+echo "[5/6] Running Test Suite"
+echo "========================================================"
+echo "Running pytest on tests..."
+pytest
+
+echo "========================================================"
+echo "[6/6] Starting LangGraph Development Server"
 echo "========================================================"
 echo "Starting local dev server. This will enable local tracing and LangGraph Studio."
 langgraph dev
