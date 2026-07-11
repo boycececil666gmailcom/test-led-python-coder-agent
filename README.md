@@ -70,7 +70,7 @@ graph TD
     classDef dir fill:#efebe9,stroke:#5d4037,stroke-width:2px,color:#3e2723;
     classDef file fill:#eceff1,stroke:#455a64,stroke-width:1px,color:#263238;
 
-    Workspace["📂 langsmith/ (Workspace Root)"]:::dir
+    Workspace["📂 auto-coder-langgraph/ (Workspace Root)"]:::dir
     Workspace --> TestCoding["📂 TestCoding/"]:::dir
     Workspace --> design_md["📄 design.md"]:::file
     

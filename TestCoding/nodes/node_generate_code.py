@@ -39,9 +39,18 @@ def node_generate_code(state: AgentState) -> dict:
     code = state.get("code", "")
     test_logs = state.get("test_logs", "")
     iterations = state.get("iterations", 0)
+    syntax_passed = state.get("syntax_passed", True)
+    
+    # Dynamically inject context about whether it's a syntax or logic error
+    if not syntax_passed:
+        error_context = "CRITICAL: The code failed to parse due to a SYNTAX error. Please locate the syntax/parsing issue and fix it."
+    else:
+        error_context = "CRITICAL: The code has valid Python syntax, but failed the test assertions (LOGIC error). Please check the test failures and correct the logic."
     
     prompt = f"""You are a code repair agent. The tests for the code have failed.
 Your task is to fix the bug in the code so that the tests pass.
+
+{error_context}
 
 Here is the path to the file to modify:
 {file_path}

@@ -14,3 +14,17 @@ def cond_should_continue(state: AgentState) -> str:
         return END
         
     return "node_generate_code"
+
+
+def cond_after_syntax_check(state: AgentState) -> str:
+    """Determine next step based on syntax check results."""
+    syntax_passed = state.get("syntax_passed", True)
+    iterations = state.get("iterations", 0)
+    max_iterations = state.get("max_iterations", 3)
+    
+    if not syntax_passed:
+        if iterations >= max_iterations:
+            return END
+        return "node_generate_code"
+        
+    return "node_run_tests"

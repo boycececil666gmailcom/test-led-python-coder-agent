@@ -9,6 +9,7 @@ class AgentState(TypedDict):
     code: str
     test_logs: str
     test_passed: bool
+    syntax_passed: bool
     iterations: int
     max_iterations: int
     messages: Annotated[Sequence[BaseMessage], add_messages]

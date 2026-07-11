@@ -56,3 +56,48 @@ def add_five(x):
         corrected_content = f.read()
         
     assert "return x + 5" in corrected_content
+
+
+def test_ast_check_invalid_syntax(tmp_path):
+    """Test that the agent flags syntax errors and invokes repair."""
+    # 1. Create a file with syntactic errors (missing colon after function signature)
+    syntax_error_code = """def add_five(x)
+    return x + 5
+"""
+    source_file = tmp_path / "broken_syntax.py"
+    source_file.write_text(syntax_error_code, encoding="utf-8")
+    
+    test_code = f"""import sys
+sys.path.insert(0, r"{str(tmp_path)}")
+from broken_syntax import add_five
+def test_add_five():
+    assert add_five(10) == 15
+"""
+    test_file = tmp_path / "test_broken_syntax.py"
+    test_file.write_text(test_code, encoding="utf-8")
+    
+    # 2. Invoke the LangGraph workflow
+    inputs = {
+        "file_path": str(source_file),
+        "test_path": str(test_file),
+        "max_iterations": 3,
+        "iterations": 0,
+        "messages": [],
+    }
+    
+    from unittest.mock import patch
+    from langchain_core.messages import AIMessage
+    
+    mock_response = AIMessage(content="""```python
+def add_five(x):
+    return x + 5
+```""")
+    
+    with patch("langchain_core.language_models.chat_models.BaseChatModel.invoke", return_value=mock_response):
+        output = graph.invoke(inputs)
+        
+    # 3. Verify outcomes
+    assert output["syntax_passed"] is True
+    assert output["test_passed"] is True
+    assert output["iterations"] == 1
+
