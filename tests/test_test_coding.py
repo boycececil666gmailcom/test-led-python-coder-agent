@@ -1,10 +1,10 @@
 import os
 import sys
 import pytest
-from TestCoding.agent import graph
+from src.agent import graph
 
 def test_auto_repair_integration(tmp_path):
-    """Test that the TestCoding agent can fix a bug in a file so that the test passes."""
+    """Test that the src agent can fix a bug in a file so that the test passes."""
     # 1. Create a buggy code file
     buggy_code = """def add_five(x):
     # This should be x + 5, but we write x + 4 as a bug

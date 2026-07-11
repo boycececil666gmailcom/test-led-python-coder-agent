@@ -6,7 +6,7 @@ This project implements an autonomous test-driven code repair agent using LangGr
 
 ### 1. Python-Specific Scope
 This agent is built **exclusively for Python coding** and does not support other programming languages.
-* **Why?** It relies heavily on local Python-specific AST syntax validators ([node_check_syntax.py](file:///c:/Users/boyce/OneDrive/Desktop/auto-coder-langgraph/TestCoding/nodes/node_check_syntax.py)) and the `pytest` runner.
+* **Why?** It relies heavily on local Python-specific AST syntax validators ([node_check_syntax.py](file:///c:/Users/boyce/OneDrive/Desktop/auto-coder-langgraph/src/nodes/node_check_syntax.py)) and the `pytest` runner.
 * **Extensibility**: While adding support for other execution environments (such as JavaScript/Jest or Rust/Cargo) is straightforward, we restrict the scope to Python to keep the codebase highly focused and manageable.
 
 ### 2. Test-Driven & Review-Led Coding
@@ -127,11 +127,11 @@ graph TD
     classDef file fill:#eceff1,stroke:#455a64,stroke-width:1px,color:#263238;
 
     Workspace["📂 auto-coder-langgraph/ (Workspace Root)"]:::dir
-    Workspace --> TestCoding["📂 TestCoding/"]:::dir
+    Workspace --> src["📂 src/"]:::dir
     
-    TestCoding --> agent_py["📄 agent.py (Graph instantiation)"]:::file
-    TestCoding --> state_py["📄 state.py (AgentState TypedDict)"]:::file
-    TestCoding --> nodes_dir["📂 nodes/ (Subpackage)"]:::dir
+    src --> agent_py["📄 agent.py (Graph instantiation)"]:::file
+    src --> state_py["📄 state.py (AgentState TypedDict)"]:::file
+    src --> nodes_dir["📂 nodes/ (Subpackage)"]:::dir
     
     nodes_dir --> init_py["📄 __init__.py (Interface exposure)"]:::file
     nodes_dir --> node_run_tests_py["📄 node_run_tests.py (pytest run node)"]:::file

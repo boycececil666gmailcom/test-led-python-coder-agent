@@ -1,7 +1,7 @@
 
 import os
 import ast
-from TestCoding.state import AgentState
+from src.state import AgentState
 
 def node_check_syntax(state: AgentState) -> dict:
     """Validate python code structure before running pytest."""

@@ -1,7 +1,7 @@
 import os
 import sys
 import subprocess
-from TestCoding.state import AgentState
+from src.state import AgentState
 
 def node_run_tests(state: AgentState) -> dict:
     """Run pytest on the test path, capture logs, and update the state."""
@@ -23,7 +23,7 @@ def node_run_tests(state: AgentState) -> dict:
 
     # Set up environment variables to make sure python path includes workspace root
     env = os.environ.copy()
-    # TestCoding is one level down from workspace root
+    # src is one level down from workspace root
     workspace_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env["PYTHONPATH"] = workspace_root + os.pathsep + env.get("PYTHONPATH", "")
 
