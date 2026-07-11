@@ -1,33 +1,3 @@
-# Design Document
-
-
-## Agent Identity
-
-* **Name**: `TestCoding`
-* **Directory**: [TestCoding](file:///c:/Users/boyce/OneDrive/Desktop/langsmith/TestCoding)
-
-## Directory Structure
-
-```mermaid
-graph TD
-    classDef dir fill:#efebe9,stroke:#5d4037,stroke-width:2px,color:#3e2723;
-    classDef file fill:#eceff1,stroke:#455a64,stroke-width:1px,color:#263238;
-
-    Workspace["📂 langsmith/ (Workspace Root)"]:::dir
-    Workspace --> TestCoding["📂 TestCoding/"]:::dir
-    Workspace --> design_md["📄 design.md"]:::file
-    
-    TestCoding --> agent_py["📄 agent.py (Graph instantiation)"]:::file
-    TestCoding --> state_py["📄 state.py (AgentState TypedDict)"]:::file
-    TestCoding --> nodes_dir["📂 nodes/ (Subpackage)"]:::dir
-    
-    nodes_dir --> init_py["📄 __init__.py (Interface exposure)"]:::file
-    nodes_dir --> node_run_tests_py["📄 node_run_tests.py (pytest run node)"]:::file
-    nodes_dir --> node_generate_code_py["📄 node_generate_code.py (LLM logic node)"]:::file
-    nodes_dir --> cond_should_continue_py["📄 cond_should_continue.py (Conditional edge logic)"]:::file
-```
-
----
 
 ## Architecture & State Workflow
 
@@ -59,23 +29,6 @@ flowchart TD
     
     node_generate_code --> node_run_tests
 ```
-
----
-
-## State Fields (`AgentState`)
-
-| Field Name | Type | Description |
-| :--- | :--- | :--- |
-| `file_path` | `str` | Path to the source code file to be modified |
-| `test_path` | `str` | Path to the pytest test file to be executed |
-| `code` | `str` | Current source code content |
-| `test_logs` | `str` | Output from the most recent pytest execution (e.g., error logs) |
-| `test_passed` | `bool` | Flag indicating whether all tests passed |
-| `iterations` | `int` | Current iteration count of the self-correction loop |
-| `max_iterations` | `int` | Maximum loop limit (prevents infinite loops, default: 3) |
-| `messages` | `list` | Chat message history (standard conversation history for LangGraph) |
-
-
 ## Data Flow
 
 ```mermaid
@@ -109,3 +62,38 @@ sequenceDiagram
         end
     end
 ```
+
+## Directory Structure
+
+```mermaid
+graph TD
+    classDef dir fill:#efebe9,stroke:#5d4037,stroke-width:2px,color:#3e2723;
+    classDef file fill:#eceff1,stroke:#455a64,stroke-width:1px,color:#263238;
+
+    Workspace["📂 langsmith/ (Workspace Root)"]:::dir
+    Workspace --> TestCoding["📂 TestCoding/"]:::dir
+    Workspace --> design_md["📄 design.md"]:::file
+    
+    TestCoding --> agent_py["📄 agent.py (Graph instantiation)"]:::file
+    TestCoding --> state_py["📄 state.py (AgentState TypedDict)"]:::file
+    TestCoding --> nodes_dir["📂 nodes/ (Subpackage)"]:::dir
+    
+    nodes_dir --> init_py["📄 __init__.py (Interface exposure)"]:::file
+    nodes_dir --> node_run_tests_py["📄 node_run_tests.py (pytest run node)"]:::file
+    nodes_dir --> node_generate_code_py["📄 node_generate_code.py (LLM logic node)"]:::file
+    nodes_dir --> cond_should_continue_py["📄 cond_should_continue.py (Conditional edge logic)"]:::file
+```
+
+## State Fields (`AgentState`)
+
+| Field Name | Type | Description |
+| :--- | :--- | :--- |
+| `file_path` | `str` | Path to the source code file to be modified |
+| `test_path` | `str` | Path to the pytest test file to be executed |
+| `code` | `str` | Current source code content |
+| `test_logs` | `str` | Output from the most recent pytest execution (e.g., error logs) |
+| `test_passed` | `bool` | Flag indicating whether all tests passed |
+| `iterations` | `int` | Current iteration count of the self-correction loop |
+| `max_iterations` | `int` | Maximum loop limit (prevents infinite loops, default: 3) |
+| `messages` | `list` | Chat message history (standard conversation history for LangGraph) |
+
