@@ -26,7 +26,7 @@ def test_add_five():
     test_file = tmp_path / "test_buggy_source.py"
     test_file.write_text(test_code, encoding="utf-8")
     
-    # 3. Invoke the LangGraph workflow with mocked LLM
+    # 3. Invoke the LangGraph workflow
     inputs = {
         "file_path": str(source_file),
         "test_path": str(test_file),

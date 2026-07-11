@@ -63,15 +63,3 @@ fi
 if [ "$LANGCHAIN_API_KEY" = "your-langsmith-api-key" ] || [ -z "$LANGCHAIN_API_KEY" ]; then
     echo "Warning: LANGCHAIN_API_KEY is not set correctly in your .env file."
 fi
-
-echo "========================================================"
-echo "[5/6] Running Test Suite"
-echo "========================================================"
-echo "Running pytest on tests..."
-pytest
-
-echo "========================================================"
-echo "[6/6] Starting LangGraph Development Server"
-echo "========================================================"
-echo "Starting local dev server. This will enable local tracing and LangGraph Studio."
-langgraph dev
