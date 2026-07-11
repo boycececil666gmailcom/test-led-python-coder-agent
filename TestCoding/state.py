@@ -13,3 +13,7 @@ class AgentState(TypedDict):
     iterations: int
     max_iterations: int
     messages: Annotated[Sequence[BaseMessage], add_messages]
+    test_description: str
+    validation_passed: bool
+    error_message: str
+    review_feedback: str

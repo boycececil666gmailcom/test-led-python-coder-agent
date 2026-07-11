@@ -9,6 +9,11 @@ from TestCoding.nodes import (
     node_check_syntax,
     cond_should_continue,
     cond_after_syntax_check,
+    node_validate_inputs,
+    cond_route_entry,
+    node_generate_test,
+    node_human_review,
+    cond_after_review,
 )
 
 
@@ -16,12 +21,30 @@ from TestCoding.nodes import (
 workflow = StateGraph(AgentState)
 
 # Add nodes
+workflow.add_node("node_validate_inputs", node_validate_inputs)
+workflow.add_node("node_generate_test", node_generate_test)
+workflow.add_node("node_human_review", node_human_review)
 workflow.add_node("node_run_tests", node_run_tests)
 workflow.add_node("node_generate_code", node_generate_code)
 workflow.add_node("node_check_syntax", node_check_syntax)
 
 # Set entry point
-workflow.add_edge(START, "node_check_syntax")
+workflow.add_edge(START, "node_validate_inputs")
+
+# Add conditional edge from validation entry point
+workflow.add_conditional_edges(
+    "node_validate_inputs",
+    cond_route_entry,
+)
+
+# Add edge from node_generate_test to node_human_review
+workflow.add_edge("node_generate_test", "node_human_review")
+
+# Add conditional edge from human review
+workflow.add_conditional_edges(
+    "node_human_review",
+    cond_after_review,
+)
 
 # Add conditional edge from node_check_syntax
 workflow.add_conditional_edges(
@@ -40,3 +63,4 @@ workflow.add_edge("node_generate_code", "node_check_syntax")
 
 # Compile graph
 graph = workflow.compile()
+
