@@ -15,3 +15,6 @@ ENV/
 
 # Pytest caches
 .pytest_cache/
+
+# LangGraph API local checkpoints
+.langgraph_api/
