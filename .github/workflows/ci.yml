@@ -25,7 +25,25 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Tests
-      # We skip the human/live Ollama tests if LLM credentials aren't set
+    - name: Install and Run Ollama
       run: |
-        pytest tests/ -k "not test_generate_test_and_review"
+        # Download and install Ollama on Ubuntu Runner
+        curl -fsSL https://ollama.com/install.sh | sh
+        # Start Ollama service in the background
+        ollama serve > /dev/null 2>&1 &
+        # Wait for the service to start
+        sleep 5
+        # Pull the smallest Qwen model (about 390MB)
+        ollama pull qwen2.5:0.5b
+
+    - name: Run Tests
+      env:
+        PYTHONPATH: .
+        LLM_MODEL: "qwen2.5:0.5b"
+        LLM_BASE_URL: "http://localhost:11434/v1"
+        LLM_API_KEY: "ollama"
+      run: |
+        pytest tests/
+
+
+
